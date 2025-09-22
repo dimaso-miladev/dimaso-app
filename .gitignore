@@ -12,9 +12,9 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 phpunit.dusk.xml
-#/public/dist
-# /public/build
-#/public/mix-manifest.json
+/public/dist
+/public/build
+/public/mix-manifest.json
 /.vscode
 /.idea
 /.vscode-test
