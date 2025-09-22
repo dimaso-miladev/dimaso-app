@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -16,6 +17,8 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * The table associated with the model.
+     * For WordPress, this is often prefixed, e.g., 'wp_users'.
+     * Assuming 'users' is correct or configured elsewhere.
      *
      * @var string
      */
@@ -30,7 +33,7 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Indicates if the model should be timestamped.
-     * This table does not have created_at and updated_at columns.
+     * WordPress uses user_registered instead of created_at/updated_at.
      *
      * @var bool
      */
@@ -45,7 +48,10 @@ class User extends Authenticatable implements JWTSubject
         'user_login',
         'user_pass',
         'user_nicename',
+        'user_email',
         'user_url',
+        'user_registered',
+        'user_status',
         'display_name',
     ];
 
@@ -57,7 +63,6 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'user_pass',
         'user_activation_key',
-        'user_email'
     ];
 
     /**
@@ -70,8 +75,22 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
+     * Automatically hash the user_pass when setting it.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setUserPassAttribute($value)
+    {
+        // This will use Laravel's default hasher. Passwords created via the API
+        // will be secure, but may not be recognized by a standard WordPress
+        // install if it uses the older PHPass hashing algorithm.
+        $this->attributes['user_pass'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
+    }
+
+    /**
      * Override method to get the password for authentication.
-     * By default, Laravel looks for the 'password' column, but our table uses 'user_pass'.
+     * Laravel's Auth system will use the 'user_pass' column.
      *
      * @return string
      */
@@ -81,9 +100,17 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the email address for password resets.
+     *
+     * @return string
+     */
+    public function getEmailForPasswordReset()
+    {
+        return $this->user_email;
+    }
+
+    /**
      * Override method to get the email for notifications.
-     * This ensures that notifications (ResetPassword, VerifyEmail)
-     * are sent to the correct address in the 'user_email' column.
      *
      * @param \Illuminate\Notifications\Notification $notification
      * @return string
@@ -94,6 +121,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the e-mail address where password reset links are sent.
      *
      * @return string
      */
@@ -103,6 +131,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
@@ -112,6 +141,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
      *
      * @return array
      */
@@ -121,8 +151,9 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Send the password reset notification.
      *
-     * @param  string  $token
+     * @param string $token
      * @return void
      */
     public function sendPasswordResetNotification($token)
@@ -131,7 +162,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Gửi thông báo xác thực email.
+     * Send the email verification notification.
      *
      * @return void
      */
@@ -141,6 +172,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Relationship to usermeta table.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -150,6 +182,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get a meta value from the usermeta table.
      *
      * @param string $key
      * @return mixed|null

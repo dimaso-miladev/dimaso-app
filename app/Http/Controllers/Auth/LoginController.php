@@ -3,79 +3,74 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest; // 1. Import LoginRequest
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login']]);
     }
 
-    public function login(LoginRequest $request) // 2. Sử dụng LoginRequest tại đây
+    /**
+     * Handle a login request to the application.
+     *
+     * @param  \App\Http\Requests\Auth\LoginRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function login(LoginRequest $request)
     {
-        // Khối validate đã được loại bỏ, vì LoginRequest đã xử lý việc này.
+        $credentials = [
+            'user_login' => $request->user_login,
+            'password' => $request->password
+        ];
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
+        // Sử dụng trực tiếp phương thức `attempt` của guard `api`.
+        // Nó sẽ tự động kiểm tra credentials dựa trên provider `users` đã được cấu hình
+        // và trả về token nếu thành công.
+        if (! $token = auth('api')->attempt($credentials)) {
+            // Nếu attempt thất bại, trả về lỗi.
             throw ValidationException::withMessages([
-                'email' => [trans('auth.failed')],
+                'user_login' => [trans('auth.failed')],
             ]);
         }
 
-        $passwordMatches = false;
-
-        $isOldMd5Password = strlen($user->password) === 32 && ctype_xdigit($user->password) && !str_starts_with($user->password, '$2y$');
-
-        if ($isOldMd5Password) {
-            if (md5($request->password) === $user->password) {
-                $user->password = bcrypt($request->password);
-                $user->save();
-                $passwordMatches = true;
-            }
-        } else {
-            if (Hash::check($request->password, $user->password)) {
-                $passwordMatches = true;
-            }
-        }
-
-        if (!$passwordMatches) {
-            throw ValidationException::withMessages([
-                'email' => [trans('auth.failed')],
-            ]);
-        }
-
-        if (!$token = auth('api')->login($user)) {
-            throw ValidationException::withMessages([
-                'email' => [trans('auth.failed')],
-            ]);
-        }
-
+        // Nếu thành công, trả về response chứa token.
         return $this->sendLoginResponse($token);
     }
 
-    public function logout()
-    {
-        auth('api')->logout();
-        return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    public function username(): string
-    {
-        return 'email';
-    }
-
+    /**
+     * Gửi response sau khi người dùng đã được xác thực.
+     *
+     * @param  string  $token
+     * @return \Illuminate\Http\JsonResponse
+     */
     protected function sendLoginResponse(string $token)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user' => auth('api')->user()->load('profile')
+            'user' => auth('api')->user()
         ]);
+    }
+
+    /**
+     * Đăng xuất người dùng (vô hiệu hóa token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout()
+    {
+        auth('api')->logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
     }
 }
