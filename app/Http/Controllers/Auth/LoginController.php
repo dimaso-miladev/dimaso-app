@@ -27,22 +27,20 @@ class LoginController extends Controller
      */
     public function login(LoginRequest $request)
     {
+        // Xác định xem người dùng nhập email hay username
+        $loginField = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'user_email' : 'user_login';
+
         $credentials = [
-            'user_login' => $request->user_login,
-            'password' => $request->password
+            $loginField => $request->input('login'),
+            'password' => $request->input('password')
         ];
 
-        // Sử dụng trực tiếp phương thức `attempt` của guard `api`.
-        // Nó sẽ tự động kiểm tra credentials dựa trên provider `users` đã được cấu hình
-        // và trả về token nếu thành công.
         if (! $token = auth('api')->attempt($credentials)) {
-            // Nếu attempt thất bại, trả về lỗi.
             throw ValidationException::withMessages([
-                'user_login' => [trans('auth.failed')],
+                'login' => [trans('auth.failed')],
             ]);
         }
 
-        // Nếu thành công, trả về response chứa token.
         return $this->sendLoginResponse($token);
     }
 
@@ -54,11 +52,16 @@ class LoginController extends Controller
      */
     protected function sendLoginResponse(string $token)
     {
+        $user = auth('api')->user();
+        
+        // Ẩn trường email khỏi response
+        $user->makeHidden('user_email', 'user_login', 'ID');
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user' => auth('api')->user()
+            'user' => $user
         ]);
     }
 
