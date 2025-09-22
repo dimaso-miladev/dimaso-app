@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Profile; 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\ApiResponse;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -35,9 +35,13 @@ class RegisterController extends Controller
 
         $user->load('profile');
 
-        $response['user_name'] = $user->user_name;
-        $response              = $user->profile;
-        return $this->successResponse($response , 'User registered successfully.');
+        // Fix: Combine user_name and profile into a single response array
+        $response = [
+            'user_name' => $user->user_name,
+            'profile' => $user->profile,
+        ];
+
+        return $this->successResponse($response, 'User registered successfully.');
     }
 
     /**
@@ -59,11 +63,18 @@ class RegisterController extends Controller
     protected function create(array $data): User
     {
         return DB::transaction(function () use ($data) {
+            // Fix: Generate a unique username
+            $baseNickname = Str::slug(explode('@', $data['email'])[0]);
+            $username = $baseNickname;
+            $counter = 1;
 
-            $baseNickname = explode('@', $data['email'])[0];
- 
+            while (User::where('user_name', $username)->exists()) {
+                $username = $baseNickname . '-' . $counter;
+                $counter++;
+            }
+
             $user = User::create([
-                'user_name' => $baseNickname,
+                'user_name' => $username,
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
             ]);
