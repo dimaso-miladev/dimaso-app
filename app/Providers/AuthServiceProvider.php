@@ -26,20 +26,23 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        // Customize the email verification URL.
         VerifyEmail::createUrlUsing(function ($notifiable) {
             $params = [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ];
 
-            // Generate the signed URL using the defined constant for expiration
+            // Create a temporary signed URL.
+            // It will expire after the duration defined in the constant.
             $url = URL::temporarySignedRoute(
                 'verification.verify',
                 now()->addMinutes(VERIFICATION_LINK_EXPIRATION_MINUTES),
                 $params
             );
 
-            // The frontend does not use the /api prefix, so we remove it.
+            // The frontend router does not use the /api prefix, so we remove it.
+            // This makes the URL compatible with the client-side application.
             return str_replace('/api', '', $url);
         });
     }

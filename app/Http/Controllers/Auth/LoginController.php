@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Create a new LoginController instance.
+     *
+     * The 'auth:api' middleware is applied to all methods except for 'login'.
      */
     public function __construct()
     {
@@ -20,13 +22,14 @@ class LoginController extends Controller
     /**
      * Handle a login request to the application.
      *
-     * @param  \App\Http\Requests\Auth\LoginRequest  $request
+     * @param  LoginRequest  $request
      * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function login(LoginRequest $request)
     {
+        // Determine if the user is logging in with an email or a username.
+        // FILTER_VALIDATE_EMAIL is a native PHP constant.
         $loginField = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'user_email' : 'user_login';
 
         $credentials = [
@@ -34,6 +37,7 @@ class LoginController extends Controller
             'password' => $request->input('password')
         ];
 
+        // Attempt to authenticate the user with the provided credentials.
         if (!$token = auth('api')->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'login' => [trans('auth.failed')],
@@ -42,26 +46,27 @@ class LoginController extends Controller
 
         $user = auth('api')->user();
 
-        // Check if the user's email is verified
+        // Block login if the email is not verified or the account is not active.
         if (!$user->hasVerifiedEmail() || $user->user_status !== USER_STATUS_ACTIVE) {
-            auth('api')->logout(); // Invalidate the token
+            auth('api')->logout(); // Invalidate the token immediately.
 
             return response()->json(['message' => 'Your email address has not been verified.'], 403);
         }
 
-        return $this->sendLoginResponse($token);
+        return $this->respondWithToken($token);
     }
 
     /**
-     * Gửi response sau khi người dùng đã được xác thực.
+     * Get the token array structure.
      *
      * @param  string  $token
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function sendLoginResponse(string $token)
+    protected function respondWithToken(string $token)
     {
         $user = auth('api')->user();
         
+        // Hide unnecessary fields before returning the user object.
         $user->makeHidden('user_email', 'user_login', 'ID');
 
         return response()->json([
@@ -73,7 +78,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Đăng xuất người dùng (vô hiệu hóa token).
+     * Log the user out (Invalidate the token).
      *
      * @return \Illuminate\Http\JsonResponse
      */
