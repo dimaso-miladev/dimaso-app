@@ -27,7 +27,6 @@ class LoginController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        // Xác định xem người dùng nhập email hay username
         $loginField = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'user_email' : 'user_login';
 
         $credentials = [
@@ -35,10 +34,19 @@ class LoginController extends Controller
             'password' => $request->input('password')
         ];
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (!$token = auth('api')->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'login' => [trans('auth.failed')],
             ]);
+        }
+
+        $user = auth('api')->user();
+
+        // Check if the user's email is verified
+        if (!$user->hasVerifiedEmail() || $user->user_status !== USER_STATUS_ACTIVE) {
+            auth('api')->logout(); // Invalidate the token
+
+            return response()->json(['message' => 'Your email address has not been verified.'], 403);
         }
 
         return $this->sendLoginResponse($token);
@@ -54,7 +62,6 @@ class LoginController extends Controller
     {
         $user = auth('api')->user();
         
-        // Ẩn trường email khỏi response
         $user->makeHidden('user_email', 'user_login', 'ID');
 
         return response()->json([

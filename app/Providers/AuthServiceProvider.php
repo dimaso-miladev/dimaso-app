@@ -26,15 +26,18 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Use the default VerifyEmail notification but customize the URL generation
         VerifyEmail::createUrlUsing(function ($notifiable) {
             $params = [
-                'id' => $notifiable->getKey(), // Use the user's primary key
-                'hash' => sha1($notifiable->getEmailForVerification()), // Generate the hash
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
             ];
 
-            // Generate the signed URL for the frontend
-            $url = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), $params);
+            // Generate the signed URL using the defined constant for expiration
+            $url = URL::temporarySignedRoute(
+                'verification.verify',
+                now()->addMinutes(VERIFICATION_LINK_EXPIRATION_MINUTES),
+                $params
+            );
 
             // The frontend does not use the /api prefix, so we remove it.
             return str_replace('/api', '', $url);

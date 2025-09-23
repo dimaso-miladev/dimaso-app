@@ -24,15 +24,14 @@ class RegisterController extends Controller
 
         $user = User::create([
             'user_login' => $data['user_login'],
-            'user_pass' => $data['password'], // The mutator in User model will hash this
-            'user_nicename' => Str::slug($data['user_login']), // Create a nicename from the login
+            'user_pass' => $data['password'],
+            'user_nicename' => Str::slug($data['user_login']),
             'user_email' => $data['user_email'],
             'user_registered' => now(),
             'display_name' => $data['display_name'],
+            'user_status' => USER_STATUS_UNVERIFIED, // Use defined constant
         ]);
 
-        // Kích hoạt sự kiện Registered, Laravel sẽ lắng nghe sự kiện này 
-        // và tự động gửi email xác thực do User model đã implement MustVerifyEmail
         event(new Registered($user));
 
         return response()->json([

@@ -11,17 +11,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 
 class VerificationController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Email Verification Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling email verification for any
-    | user that recently registered with the application. Emails may also
-    | be re-sent if the user didn't receive the original email message.
-    |
-    */
-
     use VerifiesEmails;
 
     /**
@@ -46,7 +35,7 @@ class VerificationController extends Controller
      */
     public function verify(Request $request)
     {
-        $user = User::find($request->route('id'));
+        $user = User::findOrFail($request->route('id'));
 
         if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
             throw new AuthorizationException;
@@ -57,6 +46,9 @@ class VerificationController extends Controller
         }
 
         if ($user->markEmailAsVerified()) {
+            $user->user_status = USER_STATUS_ACTIVE; // Use defined constant
+            $user->save();
+            
             event(new Verified($user));
         }
 
