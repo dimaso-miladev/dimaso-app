@@ -1,17 +1,9 @@
-@import '~bootstrap/scss/bootstrap';
-
+// Variables
 @import 'variables';
-@import 'global_site';
-@import '~sweetalert2/dist/sweetalert2';
-@import '~@fortawesome/fontawesome-svg-core/styles';
 
-@import 'elements/card';
-@import 'elements/navbar';
+// Global Site
+@import 'global_site';
+
+// Elements
 @import 'elements/buttons';
 @import 'elements/transitions';
-
-@import 'components/server-error';
-@import 'components/header_site';
-@import 'pages/home_page';
-@import 'components/footer_site';
-

@@ -1,19 +1,3 @@
 <template>
-  <div class="row">
-    <div class="col-lg-10 m-auto">
-      <card :title="$t('home')">
-        {{ $t('you_are_logged_in') }}
-      </card>
-    </div>
-  </div>
+  <h1>homepage</h1>
 </template>
-
-<script>
-// import axios from 'axios'
-export default {
-  middleware: 'auth',
-  metaInfo () {
-    return { title: this.$t('home') }
-  }
-}
-</script>
