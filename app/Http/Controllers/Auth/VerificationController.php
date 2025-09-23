@@ -62,7 +62,7 @@ class VerificationController extends Controller
 
         // Mark the email as verified and activate the user account.
         if ($user->markEmailAsVerified()) {
-            $user->user_status = USER_STATUS_ACTIVE; // Use the defined constant.
+            $user->user_status = config('constants.user.status_active'); // Use new config value
             $user->save();
             
             // Dispatch the Verified event.

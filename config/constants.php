@@ -10,4 +10,12 @@ return [
         'per_page' => 15,
     ],
 
+    'user' => [
+        'status_active' => 0,
+        'status_unverified' => 1,
+    ],
+
+    'verification' => [
+        'link_expiration_minutes' => 60,
+    ],
 ];

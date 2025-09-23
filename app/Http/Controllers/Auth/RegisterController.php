@@ -28,7 +28,7 @@ class RegisterController extends Controller
             'user_email' => $data['user_email'],
             'user_registered' => now(),
             'display_name' => $data['display_name'],
-            'user_status' => USER_STATUS_UNVERIFIED, // Default status is unverified.
+            'user_status' => config('constants.user.status_unverified'), // Default status is unverified.
         ]);
 
         // Dispatch the Registered event.

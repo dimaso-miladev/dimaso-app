@@ -47,7 +47,7 @@ class LoginController extends Controller
         $user = auth('api')->user();
 
         // Block login if the email is not verified or the account is not active.
-        if (!$user->hasVerifiedEmail() || $user->user_status !== USER_STATUS_ACTIVE) {
+        if (!$user->hasVerifiedEmail() || $user->user_status !== config('constants.user.status_active')) {
             auth('api')->logout(); // Invalidate the token immediately.
 
             return response()->json(['message' => 'Your email address has not been verified.'], 403);

@@ -37,7 +37,7 @@ class AuthServiceProvider extends ServiceProvider
             // It will expire after the duration defined in the constant.
             $url = URL::temporarySignedRoute(
                 'verification.verify',
-                now()->addMinutes(VERIFICATION_LINK_EXPIRATION_MINUTES),
+                now()->addMinutes(config('constants.verification.link_expiration_minutes')),
                 $params
             );
 
