@@ -30,11 +30,11 @@
   "new_password": "Mật khẩu mới",
   "login_with": "Đăng nhập bằng",
   "register_with": "Đăng ký bằng",
-  "verify_email": "Xác minh email",
-  "send_verification_link": "Gửi liên kết xác minh",
-  "resend_verification_link": "Gửi lại liên kết xác minh?",
-  "failed_to_verify_email": "Xác minh email thất bại.",
-  "verify_email_address": "Chúng tôi đã gửi email cho bạn với liên kết xác minh.",
+  "verify_email": "Xác thực email",
+  "send_verification_link": "Gửi liên kết xác thực",
+  "resend_verification_link": "Gửi lại liên kết xác thực?",
+  "failed_to_verify_email": "Xác thực email thất bại.",
+  "verify_email_address": "Chúng tôi đã gửi cho bạn một email chứa liên kết xác thực.",
   "home": "Trang chủ",
   "phone_number": "Số điện thoại",
   "header": {
@@ -318,5 +318,8 @@
         "booking": "Đặt lịch/ Bán vé"
       }
     }
-  }
+  },
+  "verification_sent": "Một liên kết xác thực mới đã được gửi đến địa chỉ email của bạn.",
+  "email_verified": "Email đã được xác thực thành công!",
+  "email_already_verified": "Email đã được xác thực từ trước."
 }

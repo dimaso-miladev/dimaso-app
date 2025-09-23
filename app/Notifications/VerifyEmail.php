@@ -17,9 +17,15 @@ class VerifyEmail extends Notification
     protected function verificationUrl($notifiable)
     {
         $url = URL::temporarySignedRoute(
-            'verification.verify', Carbon::now()->addMinutes(60), ['user' => $notifiable->id]
+            'verification.verify',
+            Carbon::now()->addMinutes(60),
+            [
+                'id' => $notifiable->getKey(), // <-- Corrected: Use 'id' and getKey() for the user's primary key
+                // 'hash' will be automatically added by Laravel
+            ]
         );
 
+        // The frontend URL is expected, so we remove the '/api' prefix from the generated URL
         return str_replace('/api', '', $url);
     }
 }
