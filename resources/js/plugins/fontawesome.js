@@ -8,31 +8,19 @@ import {
   faUser, faLock, faSignOutAlt, faCog,
   faEye,
   faEyeDropper,
-  faEyeSlash,
-  faArrowAltCircleRight,
-  faArrowRight,
-  faCircle,
-  faEnvelope,
-  faPhone,
-  faComment,
-  faLightbulb,
-  faListUl,
-  faChartLine,
-  faChartBar,
-  faChartPie,
-  faUserCheck, faCheck
+  faEyeSlash
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
-  faFacebookF,
+  faEdge,
   faGithub,
-  faGoogle,
+  faGoogle
 } from '@fortawesome/free-brands-svg-icons'
 
 config.autoAddCss = false
 
 library.add(
-  faUser, faLock,faListUl, faSignOutAlt, faCog, faGithub,faGoogle, faEye, faEyeSlash, faArrowRight, faArrowAltCircleRight, faFacebookF, faEnvelope, faPhone, faComment, faLightbulb,
-faChartLine,faChartPie, faUserCheck, faCheck)
+  faUser, faLock, faSignOutAlt, faCog, faGithub,faGoogle, faEye, faEyeSlash
+)
 
 Vue.component('Fa', FontAwesomeIcon)

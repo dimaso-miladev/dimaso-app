@@ -1,48 +1,18 @@
-// _variables.scss
+// Body
+$body-bg: #f7f9fb;
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+// Links
+$link-decoration: none;
+$link-hover-decoration: underline;
 
-$primary:       #103CE7; 
-$secondary:     #f7a84e; 
-$secondary_bold:#f98500; 
-$light:         #F7F9FE; 
-$dark:          #000229; 
-$white:         #FFFFFF; 
+// Cards
+$card-cap-bg: #fbfbfb;
+$card-border-color: #e8eced;
 
-$body-bg:       $light;                     
-$body-color:    #606060;                    
-$headings-color:#191919;                   
+// Borders
+$border-radius: .125rem;
+$border-radius-lg: .2rem;
+$border-radius-sm: .15rem;
 
-$border-color:  #E1E1E1; 
-
-
-$custom-colors: (
-  "accent": #61CE70, 
-  "secondary2": #64E9FF 
-);
-
-$theme-colors: map-merge($theme-colors, $custom-colors);
-
-$font-family-sans-serif: "Open Sans", sans-serif;
-$font-family-base:       $font-family-sans-serif;
-
-$headings-font-family:   "Open Sans", sans-serif; 
-
-$font-size-base:         1.0625rem; 
-$line-height-base:       1.76;      
-
-$headings-margin-bottom: 1.25rem; 
-
-
-$link-color:              $headings-color;         
-$link-decoration:         none;                      
-$link-hover-color:        $secondary;               
-$link-hover-decoration:   none;                     
-
-$border-radius:           .375rem; 
-$border-radius-sm:        .25rem;
-$border-radius-lg:        .5rem;
-
-
+// Nav Pills
 $nav-pills-border-radius: 0;
-
