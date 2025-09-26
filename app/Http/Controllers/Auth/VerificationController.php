@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Responses\ApiResponse;
 
 class VerificationController extends Controller
 {
@@ -22,7 +23,7 @@ class VerificationController extends Controller
     |
     */
 
-    use VerifiesEmails;
+    use VerifiesEmails, ApiResponse;
 
     /**
      * Create a new controller instance.
@@ -57,7 +58,7 @@ class VerificationController extends Controller
         }
 
         if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.']);
+            return $this->success(['message' => 'Email already verified.']);
         }
 
         // Mark the email as verified and activate the user account.
@@ -69,7 +70,7 @@ class VerificationController extends Controller
             event(new Verified($user));
         }
 
-        return response()->json(['message' => 'Email successfully verified.']);
+        return $this->success(['message' => 'Email successfully verified.']);
     }
 
     /**
@@ -81,11 +82,11 @@ class VerificationController extends Controller
     public function resend(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.']);
+            return $this->success(['message' => 'Email already verified.']);
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return response()->json(['message' => 'Verification email sent.']);
+        return $this->success(['message' => 'Verification email sent.']);
     }
 }

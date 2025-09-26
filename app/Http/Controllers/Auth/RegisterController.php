@@ -8,9 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
+use App\Http\Responses\ApiResponse;
 
 class RegisterController extends Controller
 {
+    use ApiResponse;
     /**
      * Handle a registration request for the application.
      *
@@ -36,9 +38,8 @@ class RegisterController extends Controller
         // because the User model implements the MustVerifyEmail interface.
         event(new Registered($user));
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Registration successful. Please check your email to verify your account.'
+        return $this->success([
+            'message' => 'Registration successful. Please check your email to verify your account.',
         ], 201);
     }
 }

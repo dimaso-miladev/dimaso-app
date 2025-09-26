@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Responses\ApiResponse;
 
 class LoginController extends Controller
 {
+    use ApiResponse;
     /**
      * Create a new LoginController instance.
      *
@@ -50,7 +52,7 @@ class LoginController extends Controller
         if (!$user->hasVerifiedEmail() || $user->user_status !== config('constants.user.status_active')) {
             auth('api')->logout(); // Invalidate the token immediately.
 
-            return response()->json(['message' => 'Your email address has not been verified.'], 403);
+            return $this->error('Your email address has not been verified.', 403);
         }
 
         return $this->respondWithToken($token);
@@ -69,11 +71,11 @@ class LoginController extends Controller
         // Hide unnecessary fields before returning the user object.
         $user->makeHidden('user_email', 'user_login', 'ID');
 
-        return response()->json([
+        return $this->success([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -86,6 +88,6 @@ class LoginController extends Controller
     {
         auth('api')->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return $this->success(['message' => 'Successfully logged out']);
     }
 }
