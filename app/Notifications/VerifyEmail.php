@@ -16,16 +16,18 @@ class VerifyEmail extends Notification
      */
     protected function verificationUrl($notifiable)
     {
+        // Generate signed URL to the named API route 'verification.verify'.
+        // Include both id and hash params so it matches the route signature.
         $url = URL::temporarySignedRoute(
             'verification.verify',
             Carbon::now()->addMinutes(60),
             [
-                'id' => $notifiable->getKey(), // <-- Corrected: Use 'id' and getKey() for the user's primary key
-                // 'hash' will be automatically added by Laravel
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );
 
-        // The frontend URL is expected, so we remove the '/api' prefix from the generated URL
-        return str_replace('/api', '', $url);
+        // Keep the /api prefix so the link hits backend verification directly.
+        return $url;
     }
 }

@@ -41,9 +41,8 @@ class AuthServiceProvider extends ServiceProvider
                 $params
             );
 
-            // The frontend router does not use the /api prefix, so we remove it.
-            // This makes the URL compatible with the client-side application.
-            return str_replace('/api', '', $url);
+            // Keep the /api prefix so the verification hits the API route directly.
+            return $url;
         });
     }
 }

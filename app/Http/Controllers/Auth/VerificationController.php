@@ -58,7 +58,10 @@ class VerificationController extends Controller
         }
 
         if ($user->hasVerifiedEmail()) {
-            return $this->success(['message' => 'Email already verified.']);
+            if ($request->expectsJson()) {
+                return $this->success(['message' => 'Email already verified.']);
+            }
+            return redirect('/login?verified=success');
         }
 
         // Mark the email as verified and activate the user account.
@@ -70,7 +73,10 @@ class VerificationController extends Controller
             event(new Verified($user));
         }
 
-        return $this->success(['message' => 'Email successfully verified.']);
+        if ($request->expectsJson()) {
+            return $this->success(['message' => 'Email successfully verified.']);
+        }
+        return redirect('/login?verified=success');
     }
 
     /**
