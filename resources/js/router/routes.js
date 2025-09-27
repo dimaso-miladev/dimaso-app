@@ -23,5 +23,15 @@ export default [
     ]
   },
 
+  // CoreUI dashboard (admin)
+  {
+    path: '/admin',
+    component: page('coreui/index.vue'),
+    children: [
+      { path: '', redirect: { name: 'coreui.dashboard' } },
+      { path: 'dashboard', name: 'coreui.dashboard', component: page('coreui/dashboard.vue') }
+    ]
+  },
+
   { path: '*', component: page('errors/404.vue') }
 ]

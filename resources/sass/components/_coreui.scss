@@ -1,0 +1,83 @@
+.coreui-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px auto;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+  min-height: 100vh;
+
+  @media (max-width: 991.98px) {
+    grid-template-columns: 0 1fr;
+    & .coreui-sidebar {
+      transform: translateX(-100%);
+    }
+    body.coreui-sidebar-show & .coreui-sidebar {
+      transform: translateX(0);
+    }
+  }
+}
+
+.coreui-sidebar {
+  grid-area: sidebar;
+  background: #fff;
+  border-right: 1px solid #e9ecef;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding-bottom: 2rem;
+  transition: transform .2s ease-in-out;
+  z-index: 1030;
+}
+
+.coreui-brand {
+  padding: .875rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+}
+
+.coreui-brand .brand-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.coreui-nav {
+  padding: .5rem;
+}
+
+.coreui-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: #495057;
+}
+
+.coreui-nav .nav-link.active {
+  background: #f1f3f5;
+  border-radius: .375rem;
+}
+
+.coreui-main {
+  grid-area: main;
+}
+
+.coreui-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.coreui-content {
+  grid-area: main;
+}
+
+.coreui-auth-card {
+  border-radius: .5rem;
+}

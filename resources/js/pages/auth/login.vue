@@ -1,53 +1,54 @@
 <template>
-  <div class="row">
-    <div class="col-lg-7 m-auto">
-      <card :title="$t('login')">
-        <form @submit.prevent="login" @keydown="form.onKeydown($event)">
-          <!-- Email -->
-          <div class="mb-3 row">
-            <label class="col-md-3 col-form-label text-md-end">{{ $t('email') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.email" :class="{ 'is-invalid': form.errors.has('email') }" class="form-control" type="email" name="email">
-              <has-error :form="form" field="email" />
-            </div>
-          </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card shadow-sm border-0 coreui-auth-card">
+        <div class="card-body p-4 p-md-5">
+          <h1 class="h4 mb-1">{{ $t('login') }}</h1>
+          <p class="text-muted mb-4">Sign in to your account</p>
 
-          <!-- Password -->
-          <div class="mb-3 row">
-            <label class="col-md-3 col-form-label text-md-end">{{ $t('password') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.password" :class="{ 'is-invalid': form.errors.has('password') }" class="form-control" type="password" name="password">
+          <form @submit.prevent="login" @keydown="form.onKeydown($event)">
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label">{{ $t('email') }}</label>
+              <input v-model="form.login" :class="{ 'is-invalid': form.errors.has('login') }" class="form-control" type="text" name="login" autocomplete="username">
+              <has-error :form="form" field="login" />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="form-label mb-0">{{ $t('password') }}</label>
+                <button type="button" class="btn btn-link btn-sm text-decoration-none" @click="togglePassword">
+                  <fa :icon="showPassword ? 'eye-slash' : 'eye'" fixed-width />
+                  <span class="ms-1">{{ showPassword ? 'Hide' : 'Show' }}</span>
+                </button>
+              </div>
+              <div class="input-group">
+                <input :type="showPassword ? 'text' : 'password'" v-model="form.password" :class="{ 'is-invalid': form.errors.has('password') }" class="form-control" name="password" autocomplete="current-password">
+              </div>
               <has-error :form="form" field="password" />
             </div>
-          </div>
 
-          <!-- Remember Me -->
-          <div class="mb-3 row">
-            <div class="col-md-3" />
-            <div class="col-md-7 d-flex">
+            <!-- Remember / Forgot -->
+            <div class="mb-3 d-flex align-items-center">
               <checkbox v-model="remember" name="remember">
                 {{ $t('remember_me') }}
               </checkbox>
-
-              <router-link :to="{ name: 'password.request' }" class="small ms-auto my-auto">
+              <router-link :to="{ name: 'password.request' }" class="small ms-auto">
                 {{ $t('forgot_password') }}
               </router-link>
             </div>
-          </div>
 
-          <div class="mb-3 row">
-            <div class="col-md-7 offset-md-3 d-flex">
-              <!-- Submit Button -->
-              <v-button :loading="form.busy">
+            <!-- Actions -->
+            <div class="d-flex align-items-center gap-2">
+              <v-button :loading="form.busy" class="btn btn-primary px-4">
                 {{ $t('login') }}
               </v-button>
-
-              <!-- GitHub Login Button -->
               <login-with-github />
             </div>
-          </div>
-        </form>
-      </card>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -64,31 +65,42 @@ export default {
 
   middleware: 'guest',
 
+  layout: 'coreui-auth',
+
   metaInfo () {
     return { title: this.$t('login') }
   },
 
   data: () => ({
     form: new Form({
-      email: '',
+      login: '',
       password: ''
     }),
-    remember: false
+    remember: false,
+    showPassword: false
   }),
 
   methods: {
+    togglePassword () {
+      this.showPassword = !this.showPassword
+    },
     async login () {
-      // Submit the form.
+      // Submit the form with { login, password }
       const { data } = await this.form.post('/api/login')
+
+      // API response shape: { success: true, data: { access_token, token_type, expires_in, user } }
+      const payload = data && data.data ? data.data : {}
 
       // Save the token.
       this.$store.dispatch('auth/saveToken', {
-        token: data.token,
+        token: payload.access_token,
         remember: this.remember
       })
 
-      // Fetch the user.
-      await this.$store.dispatch('auth/fetchUser')
+      // Save user directly from response (no /api/user endpoint needed)
+      if (payload.user) {
+        this.$store.dispatch('auth/updateUser', { user: payload.user })
+      }
 
       // Redirect home.
       this.redirect()
