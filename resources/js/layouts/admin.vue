@@ -1,45 +1,38 @@
 <template>
-  <div class="coreui-layout">
-    <aside class="coreui-sidebar">
-      <div class="coreui-brand">
-        <router-link :to="{ name: 'coreui.dashboard' }" class="brand-link">
-          {{ appName }}
-        </router-link>
+  <div class="admin-layout d-flex">
+    <core-sidebar :brand="appName" :brand-short="appShort" />
+
+    <div class="wrapper d-flex flex-column min-vh-100 flex-grow-1">
+      <core-header :user="user" :breadcrumbs="breadcrumbs" @toggle="toggleSidebar" @logout="logout" />
+
+      <div class="body flex-grow-1">
+        <div class="container-lg px-4 py-3">
+          <child />
+        </div>
       </div>
-      <nav class="coreui-nav">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <router-link :to="{ name: 'coreui.dashboard' }" class="nav-link" active-class="active">
-              <fa icon="user" fixed-width />
-              <span>Dashboard</span>
-            </router-link>
-          </li>
-          <!-- Add more items here later -->
-        </ul>
-      </nav>
-    </aside>
 
-    <div class="coreui-main">
-      <core-header :user="user"
-                   :breadcrumbs="breadcrumbs"
-                   @toggle="toggleSidebar"
-                   @logout="logout" />
-
-      <main class="coreui-content container-fluid py-3">
-        <child />
-      </main>
+      <div class="footer px-4 d-flex align-items-center justify-content-between">
+        <div>
+          <a href="https://coreui.io" target="_blank">CoreUI</a>
+          <span class="ms-1">© 2025 creativeLabs.</span>
+        </div>
+        <div class="ms-auto">
+          <span class="me-1">Powered by</span>
+          <a href="https://coreui.io/vue" target="_blank">CoreUI for Vue</a>
+        </div>
+      </div>
     </div>
   </div>
-  
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import CoreHeader from '~/components/CoreHeader'
+import CoreSidebar from '~/components/CoreSidebar'
 
 export default {
   name: 'AdminLayout',
-  components: { CoreHeader },
+  components: { CoreHeader, CoreSidebar },
   computed: {
     ...mapGetters({
       user: 'auth/user'
@@ -53,6 +46,7 @@ export default {
   },
   data: () => ({
     appName: window.config.appName,
+    appShort: (window.config.appName || 'A').slice(0, 1),
     defaultAvatar: '/assets/images/icon-dimaso.png'
   }),
   methods: {

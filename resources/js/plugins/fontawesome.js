@@ -14,7 +14,12 @@ import {
   faList,
   faBars,
   faHome,
-  faUserCircle
+  faUserCircle,
+  faPalette,
+  faFont,
+  faCubes,
+  faTable,
+  faChartBar
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -29,7 +34,8 @@ library.add(
   faUser, faLock, faSignOutAlt, faCog,
   faGithub, faGoogle,
   faEye, faEyeSlash, faEyeDropper,
-  faBell, faEnvelope, faList, faBars, faHome, faUserCircle
+  faBell, faEnvelope, faList, faBars, faHome, faUserCircle,
+  faPalette, faFont, faCubes, faTable, faChartBar
 )
 
 Vue.component('Fa', FontAwesomeIcon)
