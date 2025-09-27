@@ -40,7 +40,7 @@ npm run build
 resources/js/
   components/            # Component dùng chung (Card, Button, Checkbox, Navbar, Loading...)
   layouts/               # Bố cục trang
-    auth.vue             # Layout cho khách (chưa đăng nhập)
+    default.vue          # Layout cho khách (chưa đăng nhập)
     main.vue             # Layout chính cho người dùng đã đăng nhập
     admin.vue            # Layout khu vực quản trị (dashboard)
   pages/                 # Các trang (lazy-load qua router)
@@ -65,7 +65,7 @@ resources/js/
 
 ### Quy ước layout và middleware
 - Mặc định app dùng layout `main` (file: `resources/js/components/App.vue`).
-- Trang cho khách (chưa đăng nhập): đặt `layout: 'auth'`, `middleware: 'guest'`.
+- Trang cho khách (chưa đăng nhập): đặt `layout: 'default'`, `middleware: 'guest'`.
 - Trang cho người dùng: đặt `layout: 'main'`, `middleware: 'auth'` khi cần bảo vệ.
 - Khu vực quản trị: đặt `layout: 'admin'`, `middleware: 'auth'` (có thể bổ sung middleware phân quyền riêng).
 
@@ -243,4 +243,3 @@ composer install
 npm install
 ```
 cmd_connect_mysql_host: mysql -h IP_Hosting -u username -p -P 3306 database_name
-

@@ -43,7 +43,7 @@ export default {
 
   middleware: 'guest',
 
-  layout: 'auth',
+  layout: 'default',
 
   metaInfo () {
     return { title: this.$t('verify_email') }

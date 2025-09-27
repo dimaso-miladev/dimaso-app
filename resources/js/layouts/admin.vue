@@ -20,17 +20,10 @@
     </aside>
 
     <div class="coreui-main">
-      <header class="coreui-header">
-        <button class="btn btn-sm btn-outline-secondary d-lg-none" @click="toggleSidebar">
-          ☰
-        </button>
-        <div class="ms-auto d-flex align-items-center gap-3">
-          <span v-if="user" class="d-flex align-items-center">
-            <img :src="user.photo_url" class="rounded-circle me-2" style="width:28px;height:28px;" />
-            {{ user.name }}
-          </span>
-        </div>
-      </header>
+      <core-header :user="user"
+                   :breadcrumbs="breadcrumbs"
+                   @toggle="toggleSidebar"
+                   @logout="logout" />
 
       <main class="coreui-content container-fluid py-3">
         <child />
@@ -42,18 +35,33 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import CoreHeader from '~/components/CoreHeader'
 
 export default {
   name: 'AdminLayout',
-  computed: mapGetters({
-    user: 'auth/user'
-  }),
+  components: { CoreHeader },
+  computed: {
+    ...mapGetters({
+      user: 'auth/user'
+    }),
+    breadcrumbs () {
+      return [
+        { text: 'Home', to: { name: 'home' }, active: false },
+        { text: 'Dashboard', active: true }
+      ]
+    }
+  },
   data: () => ({
-    appName: window.config.appName
+    appName: window.config.appName,
+    defaultAvatar: '/assets/images/icon-dimaso.png'
   }),
   methods: {
     toggleSidebar () {
       document.body.classList.toggle('coreui-sidebar-show')
+    },
+    async logout () {
+      try { await this.$store.dispatch('auth/logout') } catch (e) {}
+      this.$router.push({ name: 'login' })
     }
   }
 }
