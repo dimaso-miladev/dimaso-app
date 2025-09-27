@@ -44,7 +44,7 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'CoreUILayout',
+  name: 'AdminLayout',
   computed: mapGetters({
     user: 'auth/user'
   }),
@@ -58,4 +58,3 @@ export default {
   }
 }
 </script>
-

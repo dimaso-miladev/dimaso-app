@@ -9,7 +9,6 @@
 
 <script>
 export default {
-  name: 'CoreUIAuthLayout'
+  name: 'AuthLayout'
 }
 </script>
-

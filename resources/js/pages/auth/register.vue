@@ -28,7 +28,7 @@
             <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password"
               placeholder="Nhập mật khẩu của bạn" required v-model="form.password">
             <span class="input-group-text password-toggle-btn" @click="togglePasswordVisibility">
-              <fa :icon="['fa', showPassword ? 'eye-slash' : 'eye']" />
+              <fa :icon="showPassword ? 'eye-slash' : 'eye'" />
             </span>
           </div>
         </div>
@@ -39,7 +39,7 @@
               placeholder="Xác nhận lại mật khẩu" required v-model="form.password_confirmation">
             <span class="input-group-text password-toggle-btn" id="toggleConfirmPassword"
               @click="toggleConfirmPasswordVisibility">
-              <fa :icon="['fa', showConfirmPassword ? 'eye-slash' : 'eye']" />
+              <fa :icon="showConfirmPassword ? 'eye-slash' : 'eye'" />
             </span>
           </div>
         </div>
@@ -68,6 +68,8 @@ export default {
   },
 
   middleware: 'guest',
+
+  layout: 'auth',
 
   metaInfo () {
     return { title: this.$t('register') }

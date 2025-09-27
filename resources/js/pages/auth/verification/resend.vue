@@ -34,6 +34,8 @@ import Form from 'vform'
 export default {
   middleware: 'guest',
 
+  layout: 'auth',
+
   metaInfo () {
     return { title: this.$t('verify_email') }
   },

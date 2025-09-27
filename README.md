@@ -34,6 +34,72 @@ npm run dev
 npm run build
 ```
 
+## Cấu trúc `resources/js`
+
+```
+resources/js/
+  components/            # Component dùng chung (Card, Button, Checkbox, Navbar, Loading...)
+  layouts/               # Bố cục trang
+    auth.vue             # Layout cho khách (chưa đăng nhập)
+    main.vue             # Layout chính cho người dùng đã đăng nhập
+    admin.vue            # Layout khu vực quản trị (dashboard)
+  pages/                 # Các trang (lazy-load qua router)
+    auth/                # Login, Register, Password reset, Email verification
+    settings/            # Trang thiết lập tài khoản (yêu cầu đăng nhập)
+    coreui/              # Nhóm trang admin (ví dụ: Dashboard)
+    home.vue, welcome.vue
+  router/
+    routes.js            # Khai báo route và dynamic imports
+    index.js             # Cấu hình Vue Router, middleware, loading bar
+  store/
+    modules/             # Vuex modules (auth, lang, ...)
+    index.js             # Tự động nạp modules
+    mutation-types.js
+  plugins/
+    axios.js             # Interceptors: Authorization, Accept-Language, lỗi 401/5xx
+    i18n.js              # i18n và lazy-load messages theo locale
+    fontawesome.js, index.js
+  lang/                  # Tệp ngôn ngữ (được lazy-load)
+  app.js                 # Entry khởi tạo Vue (store, router, i18n, plugins)
+```
+
+### Quy ước layout và middleware
+- Mặc định app dùng layout `main` (file: `resources/js/components/App.vue`).
+- Trang cho khách (chưa đăng nhập): đặt `layout: 'auth'`, `middleware: 'guest'`.
+- Trang cho người dùng: đặt `layout: 'main'`, `middleware: 'auth'` khi cần bảo vệ.
+- Khu vực quản trị: đặt `layout: 'admin'`, `middleware: 'auth'` (có thể bổ sung middleware phân quyền riêng).
+
+Ví dụ (trang cần đăng nhập):
+
+```js
+export default {
+  layout: 'main',
+  middleware: 'auth',
+  metaInfo () { return { title: 'Profile' } }
+}
+```
+
+### Router và dynamic imports
+- Khai báo route tại `resources/js/router/routes.js` và dùng helper `page(path)` để lazy-load trang.
+- Middleware toàn cục: `locale`, `check-auth` được thiết lập trong `resources/js/router/index.js`.
+- Nhóm admin có sẵn: `/admin` → ví dụ `/admin/dashboard`.
+
+### Store và i18n
+- Vuex modules tự động nạp từ `store/modules`. Module `auth` lưu token (cookie) và thông tin user.
+- i18n dùng lazy-load message theo locale trong `plugins/i18n.js`.
+
+### Plugins và Axios
+- `plugins/axios.js` tự đính `Authorization` và `Accept-Language`, xử lý 401 (hết hạn token) và 5xx (hiển thị thông báo thân thiện).
+
+### Component dùng chung
+- Đăng ký global tại `resources/js/components/index.js` (Card, Child, Button, Checkbox, vform components...).
+- Navbar hiển thị trạng thái đăng nhập và liên kết tới trang thiết lập, đăng xuất.
+
+### Thêm trang mới nhanh
+1) Tạo file trong `resources/js/pages/...`.
+2) Thêm route trong `resources/js/router/routes.js` qua `page('path/to.vue')`.
+3) Chỉ định `layout` và `middleware` phù hợp (xem quy ước ở trên).
+
 ## Socialite
 
 This project comes with GitHub as an example for [Laravel Socialite](https://laravel.com/docs/5.8/socialite).
@@ -177,5 +243,4 @@ composer install
 npm install
 ```
 cmd_connect_mysql_host: mysql -h IP_Hosting -u username -p -P 3306 database_name
-
 

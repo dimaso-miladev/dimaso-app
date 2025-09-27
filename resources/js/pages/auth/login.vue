@@ -7,24 +7,28 @@
           <p class="text-muted mb-4">Sign in to your account</p>
 
           <form @submit.prevent="login" @keydown="form.onKeydown($event)">
+            <div v-if="serverMessage" class="alert alert-danger" role="alert">
+              {{ serverMessage }}
+            </div>
             <!-- Email -->
             <div class="mb-3">
               <label class="form-label">{{ $t('email') }}</label>
-              <input v-model="form.login" :class="{ 'is-invalid': form.errors.has('login') }" class="form-control" type="text" name="login" autocomplete="username">
-              <has-error :form="form" field="login" />
+              <input v-model="form.login"  class="form-control" type="text" name="login" autocomplete="username">
             </div>
 
             <!-- Password -->
             <div class="mb-3">
-              <div class="d-flex justify-content-between align-items-center">
-                <label class="form-label mb-0">{{ $t('password') }}</label>
-                <button type="button" class="btn btn-link btn-sm text-decoration-none" @click="togglePassword">
-                  <fa :icon="showPassword ? 'eye-slash' : 'eye'" fixed-width />
-                  <span class="ms-1">{{ showPassword ? 'Hide' : 'Show' }}</span>
-                </button>
-              </div>
+              <label class="form-label mb-1">{{ $t('password') }}</label>
               <div class="input-group">
-                <input :type="showPassword ? 'text' : 'password'" v-model="form.password" :class="{ 'is-invalid': form.errors.has('password') }" class="form-control" name="password" autocomplete="current-password">
+                <input :type="showPassword ? 'text' : 'password'"
+                       v-model="form.password"
+                       :class="{ 'is-invalid': form.errors.has('password') }"
+                       class="form-control"
+                       name="password"
+                       autocomplete="current-password">
+                <button type="button" class="input-group-text password-toggle-btn" @click="togglePassword" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                  <fa :icon="showPassword ? 'eye-slash' : 'eye'" />
+                </button>
               </div>
               <has-error :form="form" field="password" />
             </div>
@@ -65,7 +69,7 @@ export default {
 
   middleware: 'guest',
 
-  layout: 'coreui-auth',
+  layout: 'auth',
 
   metaInfo () {
     return { title: this.$t('login') }
@@ -77,7 +81,8 @@ export default {
       password: ''
     }),
     remember: false,
-    showPassword: false
+    showPassword: false,
+    serverMessage: ''
   }),
 
   methods: {
@@ -85,25 +90,47 @@ export default {
       this.showPassword = !this.showPassword
     },
     async login () {
+      this.serverMessage = ''
       // Submit the form with { login, password }
-      const { data } = await this.form.post('/api/login')
+      try {
+        const { data } = await this.form.post('/api/login')
 
-      // API response shape: { success: true, data: { access_token, token_type, expires_in, user } }
-      const payload = data && data.data ? data.data : {}
+        // API response shape: { success: true, data: { access_token, token_type, expires_in, user } }
+        const payload = data && data.data ? data.data : {}
 
-      // Save the token.
-      this.$store.dispatch('auth/saveToken', {
-        token: payload.access_token,
-        remember: this.remember
-      })
+        // Save the token.
+        this.$store.dispatch('auth/saveToken', {
+          token: payload.access_token,
+          remember: this.remember
+        })
 
-      // Save user directly from response (no /api/user endpoint needed)
-      if (payload.user) {
-        this.$store.dispatch('auth/updateUser', { user: payload.user })
+        // Save user directly from response (no /api/user endpoint needed)
+        if (payload.user) {
+          this.$store.dispatch('auth/updateUser', { user: payload.user })
+        }
+
+        // Redirect home.
+        this.redirect()
+      } catch (e) {
+        const res = e && e.response ? e.response : {}
+        const body = res.data || {}
+
+        // Map known error shapes to UI
+        // 1) Laravel validation: { message, errors: { field: [msg] } }
+        if (body.errors) {
+          this.serverMessage = body.message || this.$t ? this.$t('error_alert_text') : 'Validation error.'
+          this.form.errors.set(body.errors)
+        }
+        // 2) Our ApiResponse error: { success: false, error: { message, details } }
+        else if (body.success === false && body.error) {
+          this.serverMessage = body.error.message || 'Login failed.'
+          if (body.error.details) {
+            this.form.errors.set(body.error.details)
+          }
+        } else {
+          this.serverMessage = 'Login failed.'
+        }
       }
-
-      // Redirect home.
-      this.redirect()
     },
 
     redirect () {

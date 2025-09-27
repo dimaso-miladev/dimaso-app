@@ -7,8 +7,7 @@
 <script>
 export default {
   name: 'CoreUIWrapper',
-  layout: 'coreui',
+  layout: 'admin',
   middleware: 'auth'
 }
 </script>
-
