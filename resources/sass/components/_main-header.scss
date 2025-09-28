@@ -1,0 +1,34 @@
+.global-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background: #fff;
+}
+
+.global-nav .nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: .75rem .75rem;
+}
+
+.global-nav .icon-lg {
+  font-size: 1.25rem;
+}
+
+.global-nav .search-icon {
+  pointer-events: none;
+}
+
+.global-nav .brand img {
+  object-fit: contain;
+}
+
+.bage-mess {
+  right: 1rem !important;
+}
+
+.search-main-header{
+  width: 70% !important;
+  border-radius: 15px;
+}

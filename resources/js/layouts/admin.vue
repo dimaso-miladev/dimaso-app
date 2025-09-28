@@ -13,12 +13,8 @@
 
       <div class="footer px-4 d-flex align-items-center justify-content-between">
         <div>
-          <a href="https://coreui.io" target="_blank">CoreUI</a>
+          <a href="https://coreui.io" target="_blank">Dimaso</a>
           <span class="ms-1">© 2025 creativeLabs.</span>
-        </div>
-        <div class="ms-auto">
-          <span class="me-1">Powered by</span>
-          <a href="https://coreui.io/vue" target="_blank">CoreUI for Vue</a>
         </div>
       </div>
     </div>

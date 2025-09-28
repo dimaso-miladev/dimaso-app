@@ -1,21 +1,17 @@
 <template>
-  <div class="main-layout">
-    <navbar />
-
-    <div class="container-lg mt-4">
+  <div class="main-layout d-flex flex-column min-vh-100">
+    <main-header />
+    <div class="container-lg mt-4 flex-grow-1">
       <child />
     </div>
   </div>
-</template>
+  </template>
 
 <script>
-import Navbar from '~/components/Navbar'
+import MainHeader from '~/components/MainHeader'
 
 export default {
   name: 'MainLayout',
-
-  components: {
-    Navbar
-  }
+  components: { MainHeader }
 }
 </script>
