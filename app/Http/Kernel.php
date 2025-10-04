@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'ip.allowlist' => \App\Http\Middleware\AdminIpAllowlist::class,
+        'admin.access.notify' => \App\Http\Middleware\AdminAccessNotify::class,
     ];
 }

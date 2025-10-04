@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Admin area: apply IP allowlist middleware. Must be defined before the catch-all route.
-Route::middleware('ip.allowlist')->get('admin/{path?}', SpaController::class)->where('path', '(.*)');
+// Admin area: notify access attempts then apply IP allowlist. Must be defined before the catch-all route.
+Route::middleware(['admin.access.notify', 'ip.allowlist'])->get('admin/{path?}', SpaController::class)->where('path', '(.*)');
 
 // Catch-all: all other SPA routes
 Route::get('{path}', SpaController::class)->where('path', '(.*)');
