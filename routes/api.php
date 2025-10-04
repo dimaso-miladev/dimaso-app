@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\Api\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,6 @@ Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify']
 
 Route::post('email/resend', [VerificationController::class, 'resend'])
     ->name('verification.resend');
+
+// Contact form -> Telegram alert
+Route::post('contact', [ContactController::class, 'sendMailContact']);

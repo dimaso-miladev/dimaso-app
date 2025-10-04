@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Log;
 
 class TelegramService
 {
@@ -18,21 +20,34 @@ class TelegramService
     }
 
     /**
-     * Send message to Telegram chat.
+     * Send a message to Telegram chat.
      *
-     * @param string $message Support HTML
-     * @return \Illuminate\Http\Client\Response
+     * @param  string   $message   Supports HTML
+     * @return Response            HTTP client response
+     *
+     * @throws \InvalidArgumentException When token/chat_id is missing
+     * @throws \Illuminate\Http\Client\RequestException On non-2xx HTTP status
+     * @throws \RuntimeException          When Telegram returns ok=false
      */
-    public function sendMessage(string $message): void
+    public function sendMessage(string $message): Response
     {
-        try {
-            Http::post("{$this->baseUrl}/sendMessage", [
-                'chat_id' => $this->chatId,
-                'text' => $message,
-                'parse_mode' => 'HTML',
-            ]);
-        } catch (\Exception $e) {
-            Log::channel('single')->error('Could not send message to Telegram: ' . $e->getMessage());
+        if (empty($this->token) || empty($this->chatId)) {
+            throw new \InvalidArgumentException('Telegram token/chat_id is not configured.')
+            ;
         }
+
+        $response = Http::asForm()->post("{$this->baseUrl}/sendMessage", [
+            'chat_id' => $this->chatId,
+            'text' => $message,
+            'parse_mode' => 'HTML',
+        ])->throw();
+
+        $payload = $response->json();
+        if (!is_array($payload) || (array_key_exists('ok', $payload) && $payload['ok'] !== true)) {
+            $desc = is_array($payload) ? ($payload['description'] ?? 'Unknown error') : 'Invalid response';
+            throw new \RuntimeException('Telegram API error: ' . $desc);
+        }
+
+        return $response;
     }
 }

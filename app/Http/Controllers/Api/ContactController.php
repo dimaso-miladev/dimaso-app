@@ -43,7 +43,7 @@ class ContactController extends Controller
         try {
             $response = $this->telegramService->sendMessage($message);
             return response()->json(['message' => 'success'], 200);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error sending message to Telegram: ' . $e->getMessage());
             return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
