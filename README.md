@@ -74,7 +74,7 @@ docker compose exec app php artisan key:generate
 docker compose exec app php artisan migrate
 ```
 
-The React development server runs inside the `frontend` container (available at http://localhost:5173). The Laravel backend is served through Nginx at http://localhost.
+The React development server runs inside the `frontend` container (available at http://dimaso-app:5173). The Laravel backend is served through Nginx at http://dimaso-app.
 
 ### Useful Commands
 
