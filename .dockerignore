@@ -1,0 +1,16 @@
+node_modules
+vendor
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+public/hot
+public/storage
+docker-compose.yml
+composer.lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+*.sqlite
+*.log
+*.env

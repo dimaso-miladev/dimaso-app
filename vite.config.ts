@@ -17,4 +17,13 @@ export default defineConfig({
       '@/': `${path.resolve(__dirname, './resources/react')}/`, '~/': `${path.resolve(__dirname, './public')}/`,
     }
   },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: 'localhost',
+      port: 5173,
+    },
+  },
 });

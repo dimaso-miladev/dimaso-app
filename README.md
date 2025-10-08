@@ -54,3 +54,37 @@ npm run build
 - Well-supported
 
 If you are looking for a complete and feature-rich Laravel React template with TypeScript, Sass, and Tailwind CSS support, then this is the template for you.
+
+## Docker Setup
+
+The project includes a Docker environment that provisions PHP-FPM, Nginx, MySQL, Redis, and a Node-based Vite development server.
+
+### Prerequisites
+
+- Docker Engine 24+
+- Docker Compose (v2 plugin or standalone)
+
+### First-Time Setup
+
+```bash
+cp .env.example .env
+docker compose up --build -d
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate
+```
+
+The React development server runs inside the `frontend` container (available at http://localhost:5173). The Laravel backend is served through Nginx at http://localhost.
+
+### Useful Commands
+
+```bash
+# Run PHPUnit tests
+docker compose exec app php artisan test
+
+# Install additional npm packages
+docker compose exec frontend npm install <package-name>
+
+# Stop and remove containers, networks, volumes
+docker compose down
+```
