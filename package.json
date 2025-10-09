@@ -2,6 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "start": "vite",
     "test": "vitest",
     "coverage": "vitest run --coverage",
