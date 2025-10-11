@@ -33,5 +33,9 @@
     "vite": "^4.4.11",
     "vitest": "^0.34.6",
     "ziggy-js": "^1.8.1"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.9",
+    "@heroicons/react": "^2.2.0"
   }
 }
